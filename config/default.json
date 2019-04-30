@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://briolate:Sparty88Dawg.@drafthq-cb13t.mongodb.net/test?retryWrites=true",
+  "jwtSecret": "mysecrettoken"
+}
