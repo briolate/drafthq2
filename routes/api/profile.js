@@ -49,14 +49,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const {
-      teamName,
-      seasons,
-      playoffs,
-      championships,
-      lastPlaces,
-      drafts
-    } = req.body;
+    const { teamName, seasons, playoffs, championships, lastPlaces } = req.body;
 
     // Build profile object
     const profileFields = {};
@@ -79,9 +72,6 @@ router.post(
       profileFields.lastPlaces = lastPlaces
         .split(',')
         .map(lastPlace => lastPlace.trim());
-    }
-    if (drafts) {
-      profileFields.drafts = drafts;
     }
 
     try {
@@ -140,5 +130,101 @@ router.get('/user/:user_id', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+// @route    DELETE api/profile
+// @desc     Delete profile and user
+// @access   Private
+
+router.delete('/', auth, async (req, res) => {
+  try {
+    // Remove profile
+    await Profile.findOneAndRemove({
+      user: req.user.id
+    });
+    // Remove user
+    await User.findOneAndRemove({
+      _id: req.user.id
+    });
+
+    res.json({ msg: 'User has been deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route    PUT api/profile/drafts
+// @desc     Add draft to profile
+// @access   Private
+router.put(
+  '/drafts',
+  [
+    auth,
+    [
+      check('year', 'Year is required')
+        .not()
+        .isEmpty(),
+      check('qb', 'QB is required')
+        .not()
+        .isEmpty(),
+      check('rb1', 'RB1 is required')
+        .not()
+        .isEmpty(),
+      check('rb2', 'RB2 is required')
+        .not()
+        .isEmpty(),
+      check('wr1', 'WR1 is required')
+        .not()
+        .isEmpty(),
+      check('wr2', 'WR2 is required')
+        .not()
+        .isEmpty(),
+      check('te', 'TE is required')
+        .not()
+        .isEmpty(),
+      check('dst', 'D/ST is required')
+        .not()
+        .isEmpty(),
+      check('k', 'K is required')
+        .not()
+        .isEmpty()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { year, qb, rb1, rb2, rb3, wr1, wr2, wr3, te, k, dst } = req.body;
+
+    const newDraft = {
+      year,
+      qb,
+      rb1,
+      rb2,
+      rb3,
+      wr1,
+      wr2,
+      wr3,
+      te,
+      k,
+      dst
+    };
+
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+
+      profile.drafts.unshift(newDraft);
+
+      await profile.save();
+
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
 
 module.exports = router;
