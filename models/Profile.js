@@ -10,6 +10,10 @@ const ProfileSchema = new mongoose.Schema({
     required: true,
     max: 40
   },
+  motto: {
+    type: String,
+    max: 40
+  },
   seasons: {
     type: [String]
   },

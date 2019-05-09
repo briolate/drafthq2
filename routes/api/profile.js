@@ -5,6 +5,7 @@ const { check, validationResult } = require('express-validator/check');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Member = require('../../models/Member');
 
 // @route    GET api/profile/me
 // @desc     Get current user's profile
@@ -49,12 +50,20 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { teamName, seasons, playoffs, championships, lastPlaces } = req.body;
+    const {
+      teamName,
+      motto,
+      seasons,
+      playoffs,
+      championships,
+      lastPlaces
+    } = req.body;
 
     // Build profile object
     const profileFields = {};
     profileFields.user = req.user.id;
     if (teamName) profileFields.teamName = teamName;
+    if (motto) profileFields.motto = motto;
     if (seasons) {
       profileFields.seasons = seasons.split(',').map(season => season.trim());
     }
@@ -137,14 +146,12 @@ router.get('/user/:user_id', async (req, res) => {
 
 router.delete('/', auth, async (req, res) => {
   try {
+    // Remove user's members
+    await Member.deleteMany({ user: req.user.id });
     // Remove profile
-    await Profile.findOneAndRemove({
-      user: req.user.id
-    });
+    await Profile.findOneAndRemove({ user: req.user.id });
     // Remove user
-    await User.findOneAndRemove({
-      _id: req.user.id
-    });
+    await User.findOneAndRemove({ _id: req.user.id });
 
     res.json({ msg: 'User has been deleted' });
   } catch (err) {
@@ -226,5 +233,28 @@ router.put(
     }
   }
 );
+
+// @route    DELETE api/profile/drafts/:draft_id
+// @desc     Delete draft from profile
+// @access   Private
+router.delete('/drafts/:draft_id', auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+
+    // Get remove index
+    const removeIndex = profile.drafts
+      .map(draft => draft.id)
+      .indexOf(req.params.edu_id);
+
+    profile.drafts.splice(removeIndex, 1);
+
+    await profile.save();
+
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;

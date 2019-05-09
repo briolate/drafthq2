@@ -83,12 +83,30 @@ router.post(
   }
 );
 
-// @route    Get api/member/:id
-// @desc     Get member by ID
+// @route    GET api/member/:id
+// @desc     Get current user's members
 // @access   Private
 router.get('/:id', auth, async (req, res) => {
   try {
-    const member = await Member.findById(req.params.id);
+    const members = await Member.find({ user: req.user.id });
+
+    if (!members) {
+      return res.status(400).json({ msg: "You haven't added any members" });
+    }
+
+    res.json(members);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route    Get api/member/view-member/:member_id
+// @desc     Get member by ID
+// @access   Private
+router.get('/view-member/:member_id', auth, async (req, res) => {
+  try {
+    const member = await Member.findById(req.params.member_id);
 
     if (!member) {
       return res.status(404).json({ msg: 'Member not found' });
