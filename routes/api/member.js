@@ -121,23 +121,87 @@ router.get('/view-member/:member_id', auth, async (req, res) => {
   }
 });
 
+// @route    PUT api/member/edit-member
+// @desc     Edit a member
+// @access   Private
+router.put(
+  '/edit-member',
+  [
+    auth,
+    [
+      check('memberTeamName', "Enter member's Team Name to continue")
+        .not()
+        .isEmpty()
+    ]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      memberTeamName,
+      memberSeasons,
+      memberPlayoffs,
+      memberChampionships,
+      memberLastPlaces
+    } = req.body;
+
+    // Build member object
+    const memberFields = {};
+    memberFields.user = req.user.id;
+    if (memberTeamName) memberFields.memberTeamName = memberTeamName;
+    if (memberSeasons) {
+      memberFields.memberSeasons = memberSeasons
+        .split(',')
+        .map(memberSeason => memberSeason.trim());
+    }
+    if (memberPlayoffs) {
+      memberFields.memberPlayoffs = memberPlayoffs
+        .split(',')
+        .map(memberPlayoff => memberPlayoff.trim());
+    }
+    if (memberChampionships) {
+      memberFields.memberChampionships = memberChampionships
+        .split(',')
+        .map(memberChampionship => memberChampionship.trim());
+    }
+    if (memberLastPlaces) {
+      memberFields.memberLastPlaces = memberLastPlaces
+        .split(',')
+        .map(memberLastPlace => memberLastPlace.trim());
+    }
+
+    try {
+      let member = await Member;
+
+      if (member) {
+        // Update member
+        member = await Member.findOneAndUpdate(
+          { member },
+          { $set: memberFields },
+          { new: true }
+        );
+
+        return res.json(member);
+      } else res.json(member);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
 // @route    Delete api/member/:id
 // @desc     Delete member by ID
 // @access   Private
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/', auth, async (req, res) => {
   try {
-    const member = await Member.findById(req.params.id);
+    let member = await Member;
 
-    if (!member) {
-      return res.status(404).json({ msg: 'Member not found' });
-    }
-
-    // Check user
-    if (member.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
-    }
-
-    await member.remove();
+    // Update member
+    member = await Member.findOneAndDelete({ member });
 
     res.json({ msg: 'Member deleted' });
   } catch (err) {

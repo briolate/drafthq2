@@ -16,7 +16,7 @@ const MemberItem = ({
       {/* <img src="#" alt="" className="round-img" /> */}
       <div>
         <h2>{memberTeamName}</h2>
-        <Link to={`member/view-member/${_id}`} className="btn btn-primary">
+        <Link to={`/view-member/${_id}`} className="btn btn-primary">
           View Member
         </Link>
       </div>

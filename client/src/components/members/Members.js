@@ -18,8 +18,8 @@ const Members = ({ getMembers, member: { members, loading } }) => {
         <Fragment>
           <h1 className="large text-primary">Members</h1>
           <p className="lead">
-            <i className="fab fa-connectdevelop" /> Browse and connect with
-            other users
+            <i className="fas fa-user-friends" /> Check out other members in
+            your league(s)
           </p>
           <div className="profiles">
             {members.length > 0 ? (

@@ -6,12 +6,13 @@ import Spinner from '../layout/Spinner';
 import MemberTop from './MemberTop';
 import MemberAbout from './MemberAbout';
 import MemberDrafts from './MemberDrafts';
-import { getMemberById } from '../../actions/member';
+import { getMemberById, deleteMember } from '../../actions/member';
 
 const Member = ({
   getMemberById,
+  deleteMember,
+  history,
   member: { member, loading },
-  auth,
   match
 }) => {
   useEffect(() => {
@@ -27,9 +28,15 @@ const Member = ({
           <Link to="/members" className="btn btn-light">
             Back to Members
           </Link>
-          <Link to="/edit-member" className="btn btn-dark">
+          <Link to={'/edit-member'} className="btn btn-dark">
             Edit Member
           </Link>
+          <button
+            onClick={() => deleteMember(history)}
+            className="btn btn-danger"
+          >
+            Delete Member
+          </button>
           <div className="profile-grid my-1">
             <MemberTop member={member} />
             <MemberAbout member={member} />
@@ -49,6 +56,7 @@ const Member = ({
 
 Member.propTypes = {
   getMemberById: PropTypes.func.isRequired,
+  deleteMember: PropTypes.func.isRequired,
   member: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
@@ -60,5 +68,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getMemberById }
+  { getMemberById, deleteMember }
 )(Member);

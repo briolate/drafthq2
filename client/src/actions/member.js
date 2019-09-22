@@ -5,11 +5,12 @@ import {
   GET_MEMBER,
   MEMBER_ERROR,
   CLEAR_MEMBER,
-  // UPDATE_MEMBER,
-  GET_MEMBERS
+  UPDATE_MEMBER,
+  GET_MEMBERS,
+  MEMBER_DELETED
 } from './types';
 
-// Create or update a member
+// Create a member
 export const createMember = (
   formData,
   history,
@@ -90,5 +91,62 @@ export const getMemberById = memberId => async dispatch => {
         status: err.response.status
       }
     });
+  }
+};
+
+// Edit a member
+export const editMember = formData => async dispatch => {
+  try {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const res = await axios.put('/api/member/edit-member', formData, config);
+
+    dispatch({
+      type: UPDATE_MEMBER,
+      payload: res.data
+    });
+
+    dispatch(setAlert('Member Updated'));
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: MEMBER_ERROR,
+      payload: {
+        msg: err.response.statusText,
+        status: err.response.status
+      }
+    });
+  }
+};
+
+// Delete member
+export const deleteMember = history => async dispatch => {
+  if (window.confirm('Are you sure? This can NOT be undone!')) {
+    try {
+      await axios.delete('/api/member');
+
+      dispatch({ type: CLEAR_MEMBER });
+      dispatch({ type: MEMBER_DELETED });
+
+      dispatch(setAlert('This member has been deleted', 'success'));
+      history.push('/members');
+    } catch (err) {
+      dispatch({
+        type: MEMBER_ERROR,
+        payload: {
+          msg: err.response.statusText,
+          status: err.response.status
+        }
+      });
+    }
   }
 };

@@ -16,6 +16,9 @@ const DashboardActions = () => {
       <Link to="/create-member" className="btn btn-light">
         <i className="fas fa-plus text-info mr-2" /> Create Member
       </Link>
+      <Link to="/keeper-calculator" className="btn btn-light">
+        <i className="fas fa-plus text-info mr-2" /> Keeper Calculator
+      </Link>
     </div>
   );
 };

@@ -31,34 +31,31 @@ const CreateMember = ({ createMember, history }) => {
 
   return (
     <Fragment>
-      <h1 className="large text-primary">Create Your Profile</h1>
+      <h1 className="large text-primary">Create A Member</h1>
       <p className="lead">
-        <i className="fas fa-user" /> Let's get some information about your
-        squad
+        <i className="fas fa-user" /> Log some information about an opponent
       </p>
       <small>* = required field</small>
       <form className="form" onSubmit={e => onSubmit(e)}>
         <div className="form-group">
           <input
             type="text"
-            placeholder="* Team Name"
+            placeholder="* Member Team Name"
             name="memberTeamName"
             value={memberTeamName}
             onChange={e => onChange(e)}
+            required
           />
         </div>
         <div className="form-group">
           <input
             type="text"
-            placeholder="* Seasons"
+            placeholder="Seasons"
             name="memberSeasons"
             value={memberSeasons}
             onChange={e => onChange(e)}
           />
         </div>
-        <small className="form-text">
-          Enter at least one season this member has competed in
-        </small>
         <div className="form-group">
           <input
             type="text"

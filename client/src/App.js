@@ -10,11 +10,13 @@ import CreateProfile from './components/profile-forms/CreateProfile';
 import EditProfile from './components/profile-forms/EditProfile';
 import AddDraft from './components/profile-forms/AddDraft';
 import CreateMember from './components/members/CreateMember';
+import EditMember from './components/members/EditMember';
 import Members from './components/members/Members';
 import Member from './components/members/Member';
 import Profiles from './components/profiles/Profiles';
 import Profile from './components/profile/Profile';
 import PrivateRoute from './components/routing/PrivateRoute';
+import KeeperCalculator from './components/features/keeper-calculator/KeeperCalculator';
 // Redux
 import { Provider } from 'react-redux';
 import store from './store';
@@ -45,6 +47,11 @@ const App = () => {
               <Route exact path="/login" component={Login} />
               <Route exact path="/profiles" component={Profiles} />
               <Route exact path="/profile/:id" component={Profile} />
+              <Route
+                exact
+                path="/keeper-calculator"
+                component={KeeperCalculator}
+              />
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
               <PrivateRoute
                 exact
@@ -62,12 +69,10 @@ const App = () => {
                 path="/create-member"
                 component={CreateMember}
               />
+              <PrivateRoute exact path="/edit-member" component={EditMember} />
               <PrivateRoute exact path="/members" component={Members} />
-              <PrivateRoute
-                exact
-                path="/member/view-member/:id"
-                component={Member}
-              />
+              <PrivateRoute exact path="/view-member/:id" component={Member} />
+              <PrivateRoute exact path="/members" component={Members} />
             </Switch>
           </section>
         </Fragment>

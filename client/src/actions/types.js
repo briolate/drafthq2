@@ -19,3 +19,4 @@ export const MEMBER_ERROR = 'MEMBER_ERROR';
 export const CLEAR_MEMBER = 'CLEAR_MEMBER';
 export const UPDATE_MEMBER = 'UPDATE_MEMBER';
 export const GET_MEMBERS = 'GET_MEMBERS';
+export const MEMBER_DELETED = 'MEMBER_DELETED';
